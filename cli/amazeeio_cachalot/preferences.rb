@@ -1,10 +1,10 @@
 require 'yaml/store'
 
-require 'dinghy/constants'
+require 'amazeeio_cachalot/constants'
 
 class Preferences
-  LEGACY_PREFERENCES_FILE = Dinghy.brew+"etc/dinghy.yml"
-  PREFERENCES_FILE = Dinghy.home_dinghy+"preferences.yml"
+  LEGACY_PREFERENCES_FILE = AmazeeIOCachalot.brew+"etc/amazeeio_cachalot.yml"
+  PREFERENCES_FILE = AmazeeIOCachalot.home_amazeeio_cachalot+"preferences.yml"
 
   def self.load(path = PREFERENCES_FILE)
     migrate_if_necessary

@@ -1,8 +1,8 @@
-require 'dinghy/daemon'
+require 'amazeeio_cachalot/daemon'
 
 class FseventsToVm
-  include Dinghy::Daemon
-  INSTALL_PATH = Dinghy.brew+"bin"
+  include AmazeeIOCachalot::Daemon
+  INSTALL_PATH = AmazeeIOCachalot.brew+"bin"
   BIN_PATH = INSTALL_PATH+"fsevents_to_vm"
   VERSION = "~> 1.1.1"
 
@@ -19,7 +19,7 @@ class FseventsToVm
   end
 
   def plist_name
-    "dinghy.fsevents_to_vm.plist"
+    "amazeeio_cachalot.fsevents_to_vm.plist"
   end
 
   def name

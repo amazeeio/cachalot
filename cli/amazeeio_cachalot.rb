@@ -1,4 +1,4 @@
-module Dinghy
+module AmazeeIOCachalot
   def self.brew
     if ENV['CI'] == 'true'
       Pathname.new('/usr/local')
@@ -11,7 +11,7 @@ module Dinghy
     if $local_dev
       Pathname.new(File.expand_path("..", File.dirname(__FILE__)))
     else
-      Dinghy.brew+"opt/dinghy"
+      AmazeeIOCachalot.brew+"opt/amazeeio_cachalot"
     end
   end
 
@@ -19,7 +19,7 @@ module Dinghy
     if $local_dev
       Pathname.new(File.expand_path("../local/var", File.dirname(__FILE__)))
     else
-      Dinghy.brew+"var/dinghy"
+      AmazeeIOCachalot.brew+"var/amazeeio_cachalot"
     end
   end
 
@@ -27,12 +27,12 @@ module Dinghy
     Pathname.new(ENV.fetch("HOME"))
   end
 
-  def self.home_dinghy
-    home+'.dinghy'
+  def self.home_amazeeio_cachalot
+    home+'.amazeeio_cachalot'
   end
 
   def self.run_checks
-    create_dinghy_dirs
+    create_amazeeio_cachalot_dirs
     docker_cmd_checks
     version_check
   end
@@ -42,13 +42,13 @@ module Dinghy
     'docker-machine' => Gem::Version.new("0.6.0"),
   }
 
-  def self.create_dinghy_dirs
-    # Create the .dinghy dir if it is missing
-    unless Dinghy.home_dinghy.directory?
-      Dinghy.home_dinghy.mkdir
+  def self.create_amazeeio_cachalot_dirs
+    # Create the .amazeeio_cachalot dir if it is missing
+    unless AmazeeIOCachalot.home_amazeeio_cachalot.directory?
+      AmazeeIOCachalot.home_amazeeio_cachalot.mkdir
     end
-    unless Dinghy.var.directory?
-      FileUtils.mkdir_p Dinghy.var
+    unless AmazeeIOCachalot.var.directory?
+      FileUtils.mkdir_p AmazeeIOCachalot.var
     end
   end
 

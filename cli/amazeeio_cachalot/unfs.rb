@@ -2,7 +2,7 @@ require 'forwardable'
 require 'timeout'
 require 'socket'
 
-require 'dinghy/unfs_root_daemon'
+require 'amazeeio_cachalot/unfs_root_daemon'
 
 class Unfs
   extend Forwardable
@@ -19,20 +19,20 @@ class Unfs
   # root, even though we're squashing all permissions to the user's uid -- as
   # far as I can tell, it's just buggy when run as non-root.
   #
-  # But, we don't want to run dinghy as a whole as root, and we want to avoid
+  # But, we don't want to run amazeeio_cachalot as a whole as root, and we want to avoid
   # setuid.
   #
-  # So, we sudo out to the dinghy binary again, and run a special command to
+  # So, we sudo out to the amazeeio_cachalot binary again, and run a special command to
   # start unfsd in that sudo'd process.
   def up
     write_exports!
     puts starting_message
-    system("sudo", "#{Dinghy.dir}/bin/dinghy", "nfs", "start", Dinghy.var.to_s, *command)
+    system("sudo", "#{AmazeeIOCachalot.dir}/bin/amazeeio-cachalot", "nfs", "start", AmazeeIOCachalot.var.to_s, *command)
   end
 
   def halt
     puts stopping_message
-    system("sudo", "#{Dinghy.dir}/bin/dinghy", "nfs", "stop", Dinghy.var.to_s)
+    system("sudo", "#{AmazeeIOCachalot.dir}/bin/amazeeio-cachalot", "nfs", "stop", AmazeeIOCachalot.var.to_s)
   end
 
   def wait_for_unfs
@@ -48,17 +48,17 @@ class Unfs
   end
 
   def host_mount_dir
-    ENV['DINGHY_HOST_MOUNT_DIR'] || Dinghy.home
+    ENV['DINGHY_HOST_MOUNT_DIR'] || AmazeeIOCachalot.home
   end
 
   def guest_mount_dir
-    ENV['DINGHY_GUEST_MOUNT_DIR'] || Dinghy.home
+    ENV['DINGHY_GUEST_MOUNT_DIR'] || AmazeeIOCachalot.home
   end
 
   protected
 
   def daemon
-    UnfsRootDaemon.new(Dinghy.var, [])
+    UnfsRootDaemon.new(AmazeeIOCachalot.var, [])
   end
 
   def write_exports!
@@ -72,7 +72,7 @@ class Unfs
   end
 
   def exports_filename
-    Dinghy.home_dinghy+"machine-nfs-exports-#{machine.name}"
+    AmazeeIOCachalot.home_amazeeio_cachalot+"machine-nfs-exports-#{machine.name}"
   end
 
   def starting_message
@@ -85,7 +85,7 @@ class Unfs
 
   def command
     [
-      "#{Dinghy.brew}/sbin/unfsd",
+      "#{AmazeeIOCachalot.brew}/sbin/unfsd",
       "-e", "#{exports_filename}",
       "-n", port.to_s,
       "-m", port.to_s,

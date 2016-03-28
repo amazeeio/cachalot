@@ -2,7 +2,7 @@ require 'fileutils'
 
 require 'daemons'
 
-module Dinghy
+module AmazeeIOCachalot
 module Daemon
   def up
     puts starting_message unless root?
@@ -19,7 +19,7 @@ module Daemon
   end
 
   def daemon_group
-    @group ||= Daemons::ApplicationGroup.new("dinghy-#{name}", {
+    @group ||= Daemons::ApplicationGroup.new("amazeeio_cachalot-#{name}", {
       dir_mode: :normal,
       dir: dir.to_s,
     })
@@ -63,7 +63,7 @@ module Daemon
   protected
 
   def dir
-    Dinghy.var
+    AmazeeIOCachalot.var
   end
 
   def start

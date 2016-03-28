@@ -1,4 +1,4 @@
-require 'dinghy/constants'
+require 'amazeeio_cachalot/constants'
 
 class CheckEnv
   attr_reader :machine

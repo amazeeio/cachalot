@@ -1,6 +1,6 @@
 $LOAD_PATH << File.dirname(__FILE__)+"/daemons/lib"
 $LOAD_PATH << File.dirname(__FILE__)
-require 'dinghy/unfs_root_daemon'
+require 'amazeeio_cachalot/unfs_root_daemon'
 
 module UnfsCli
   def self.start(op, var_dir, *command)

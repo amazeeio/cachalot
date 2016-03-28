@@ -1,4 +1,4 @@
-require 'dinghy/constants'
+require 'amazeeio_cachalot/constants'
 require 'json'
 require 'shellwords'
 
@@ -7,7 +7,7 @@ class Machine
   alias :name :machine_name
 
   def initialize(machine_name)
-    @machine_name = machine_name || 'dinghy'
+    @machine_name = machine_name || 'amazeeio-cachalot'
   end
 
   def create(options = {})
@@ -33,7 +33,7 @@ class Machine
 
       if System.command_failed?
         $stderr.puts err
-        raise("There was an error bringing up the VM. Dinghy cannot continue.")
+        raise("There was an error bringing up the VM. AmazeeIOCachalot cannot continue.")
       end
     end
   end

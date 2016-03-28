@@ -5,22 +5,23 @@ require 'daemons'
 
 $LOAD_PATH << File.dirname(__FILE__)
 
-require 'dinghy.rb'
-require 'dinghy/check_env'
-require 'dinghy/docker'
-require 'dinghy/dnsmasq'
-require 'dinghy/fsevents_to_vm'
-require 'dinghy/http_proxy'
-require 'dinghy/preferences'
-require 'dinghy/unfs'
-require 'dinghy/machine'
-require 'dinghy/machine/create_options'
-require 'dinghy/system'
-require 'dinghy/version'
+require 'amazeeio_cachalot.rb'
+require 'amazeeio_cachalot/check_env'
+require 'amazeeio_cachalot/docker'
+require 'amazeeio_cachalot/dnsmasq'
+require 'amazeeio_cachalot/fsevents_to_vm'
+require 'amazeeio_cachalot/http_proxy'
+require 'amazeeio_cachalot/ssh_agent'
+require 'amazeeio_cachalot/preferences'
+require 'amazeeio_cachalot/unfs'
+require 'amazeeio_cachalot/machine'
+require 'amazeeio_cachalot/machine/create_options'
+require 'amazeeio_cachalot/system'
+require 'amazeeio_cachalot/version'
 
-$0 = 'dinghy' # fix our binary name, since we launch via the _dinghy_command wrapper
+$0 = 'amazeeio-cachalot' # fix our binary name, since we launch via the _amazeeio_cachalot_command wrapper
 
-class DinghyCLI < Thor
+class AmazeeIOCachalotCLI < Thor
   option :memory,
     type: :numeric,
     aliases: :m,
@@ -44,7 +45,7 @@ class DinghyCLI < Thor
   def create
     if machine.created?
       $stderr.puts "The VM '#{machine.name}' already exists in docker-machine."
-      $stderr.puts "Run `dinghy up` to bring up the VM, or `dinghy destroy` to delete it."
+      $stderr.puts "Run `amazeeio_cachalot up` to bring up the VM, or `amazeeio_cachalot destroy` to delete it."
       exit(1)
     end
 
@@ -95,6 +96,7 @@ class DinghyCLI < Thor
     puts "FSEV: #{fsevents.status}"
     puts " DNS: #{dns.status}"
     puts "HTTP: #{http_proxy.status}"
+    puts " SSH: #{ssh_agent.status}"
     return unless machine.status == 'running'
     [unfs, dns, fsevents].each do |daemon|
       if !daemon.running?
@@ -112,7 +114,7 @@ class DinghyCLI < Thor
     if machine.running?
       puts machine.vm_ip
     else
-      $stderr.puts "The VM is not running, `dinghy up` to start"
+      $stderr.puts "The VM is not running, `amazeeio_cachalot up` to start"
       exit 1
     end
   end
@@ -154,7 +156,7 @@ class DinghyCLI < Thor
     restart
   end
 
-  desc "shellinit", "returns env variables to set, should be run like $(dinghy shellinit)"
+  desc "shellinit", "returns env variables to set, should be run like $(amazeeio_cachalot shellinit)"
   def shellinit
     vm_must_exist!
     CheckEnv.new(machine).print
@@ -163,9 +165,9 @@ class DinghyCLI < Thor
   map "env" => :shellinit
 
   map "-v" => :version
-  desc "version", "display dinghy version"
+  desc "version", "display amazeeio_cachalot version"
   def version
-    puts "Dinghy #{DINGHY_VERSION}"
+    puts "AmazeeIOCachalot #{DINGHY_VERSION}"
   end
 
   private
@@ -173,7 +175,7 @@ class DinghyCLI < Thor
   def vm_must_exist!
     if !machine.created?
       $stderr.puts "The VM '#{machine.name}' does not exist in docker-machine."
-      $stderr.puts "Run `dinghy create` to create the VM, `dinghy help create` to see available options."
+      $stderr.puts "Run `amazeeio_cachalot create` to create the VM, `amazeeio_cachalot help create` to see available options."
       exit(1)
     end
   end
@@ -184,6 +186,10 @@ class DinghyCLI < Thor
 
   def proxy_disabled?
     preferences[:proxy_disabled] == true
+  end
+
+  def sshagent_disabled?
+    preferences[:sshagent_disabled] == true
   end
 
   def fsevents_disabled?
@@ -199,11 +205,15 @@ class DinghyCLI < Thor
   end
 
   def dns
-    @dns ||= Dnsmasq.new(machine, preferences[:dinghy_domain])
+    @dns ||= Dnsmasq.new(machine, preferences[:amazeeio_cachalot_domain])
   end
 
   def http_proxy
-    @http_proxy ||= HttpProxy.new(machine, dns.dinghy_domain)
+    @http_proxy ||= HttpProxy.new(machine, dns.amazeeio_cachalot_domain)
+  end
+
+  def ssh_agent
+    @ssh_agent ||= SshAgent.new(machine, unfs)
   end
 
   def fsevents
@@ -230,9 +240,17 @@ class DinghyCLI < Thor
       sleep 5
       http_proxy.up
     end
+    sshagent = options[:sshagent] || (options[:sshagent].nil? && !sshagent_disabled?)
+    if sshagent
+      # this is hokey, but it can take a few seconds for docker daemon to be available
+      # TODO: poll in a loop until the docker daemon responds
+      sleep 5
+      ssh_agent.up
+    end
 
     preferences.update(
       proxy_disabled: !proxy,
+      sshagent_disabled: !sshagent,
       fsevents_disabled: !fsevents,
     )
 

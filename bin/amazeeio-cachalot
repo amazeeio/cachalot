@@ -8,4 +8,4 @@ unset GEM_HOME
 unset GEM_PATH
 
 BIN_DIR=$(cd "${0%/*}" > /dev/null && pwd -P)
-exec $BIN_DIR/_dinghy_command "$@"
+exec $BIN_DIR/_amazeeio-cachalot_command "$@"

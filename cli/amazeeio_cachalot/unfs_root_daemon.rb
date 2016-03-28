@@ -1,7 +1,7 @@
-require 'dinghy/daemon'
+require 'amazeeio_cachalot/daemon'
 
 class UnfsRootDaemon
-  include Dinghy::Daemon
+  include AmazeeIOCachalot::Daemon
   attr_reader :dir, :command
 
   def initialize(var_dir, command_args)
