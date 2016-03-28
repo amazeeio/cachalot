@@ -10,8 +10,6 @@ require 'amazeeio_cachalot/check_env'
 require 'amazeeio_cachalot/docker'
 require 'amazeeio_cachalot/dnsmasq'
 require 'amazeeio_cachalot/fsevents_to_vm'
-require 'amazeeio_cachalot/http_proxy'
-require 'amazeeio_cachalot/ssh_agent'
 require 'amazeeio_cachalot/preferences'
 require 'amazeeio_cachalot/unfs'
 require 'amazeeio_cachalot/machine'
@@ -95,8 +93,6 @@ class AmazeeIOCachalotCLI < Thor
     puts " NFS: #{unfs.status}"
     puts "FSEV: #{fsevents.status}"
     puts " DNS: #{dns.status}"
-    puts "HTTP: #{http_proxy.status}"
-    puts " SSH: #{ssh_agent.status}"
     return unless machine.status == 'running'
     [unfs, dns, fsevents].each do |daemon|
       if !daemon.running?
@@ -184,14 +180,6 @@ class AmazeeIOCachalotCLI < Thor
     @preferences ||= Preferences.load
   end
 
-  def proxy_disabled?
-    preferences[:proxy_disabled] == true
-  end
-
-  def sshagent_disabled?
-    preferences[:sshagent_disabled] == true
-  end
-
   def fsevents_disabled?
     preferences[:fsevents_disabled] == true
   end
@@ -206,14 +194,6 @@ class AmazeeIOCachalotCLI < Thor
 
   def dns
     @dns ||= Dnsmasq.new(machine, preferences[:amazeeio_cachalot_domain])
-  end
-
-  def http_proxy
-    @http_proxy ||= HttpProxy.new(machine, dns.amazeeio_cachalot_domain)
-  end
-
-  def ssh_agent
-    @ssh_agent ||= SshAgent.new(machine, unfs)
   end
 
   def fsevents
@@ -233,24 +213,8 @@ class AmazeeIOCachalotCLI < Thor
       fsevents.up
     end
     dns.up
-    proxy = options[:proxy] || (options[:proxy].nil? && !proxy_disabled?)
-    if proxy
-      # this is hokey, but it can take a few seconds for docker daemon to be available
-      # TODO: poll in a loop until the docker daemon responds
-      sleep 5
-      http_proxy.up
-    end
-    sshagent = options[:sshagent] || (options[:sshagent].nil? && !sshagent_disabled?)
-    if sshagent
-      # this is hokey, but it can take a few seconds for docker daemon to be available
-      # TODO: poll in a loop until the docker daemon responds
-      sleep 5
-      ssh_agent.up
-    end
 
     preferences.update(
-      proxy_disabled: !proxy,
-      sshagent_disabled: !sshagent,
       fsevents_disabled: !fsevents,
     )
 
