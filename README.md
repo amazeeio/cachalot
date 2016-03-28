@@ -1,26 +1,20 @@
-# dinghy
+# AmazeeIO Cachalot
 
-Docker on OS X with batteries included, aimed at making a more pleasant local development experience.
+Local OS X Drupal Hosting based on Docker with batteries included, aimed at making a more pleasant local development experience.
+Based on the very awesome [dinghy](https://github.com/codekitchen/dinghy) by codekitchen.
 Runs on top of [docker-machine](https://github.com/docker/machine).
 
-  * Faster volume sharing using NFS rather than built-in virtualbox/vmware file shares. A medium-sized Rails app boots in 5 seconds, rather than 30 seconds using vmware file sharing, or 90 seconds using virtualbox file sharing.
-  * Filesystem events work on mounted volumes. Edit files on your host, and see guard/webpack/etc pick up the changes immediately.
-  * Easy access to running containers using built-in DNS and HTTP proxy.
+Why should you use cachalot instead of the regular docker-machine?
+  * Faster volume sharing using NFS rather than built-in virtualbox/vmware file shares.
+  * Filesystem events work on mounted volumes. Edit files on your host, and see gulp/grunt pick up the changes immediately.
+  * Easy access to running containers using built-in DNS, HTTP and HTTPS proxy.
+  * Easier SSH Key management with built-in SSH Agent
 
-Dinghy creates its own VM using `docker-machine`, it will not modify your existing `docker-machine` VMs.
-
-Eventually `docker-machine` may have a rich enough plugin system that dinghy can
-just become a plugin to `docker-machine`. For now, dinghy runs as a wrapper
-around `docker-machine`, shelling out to create the VM and using `launchd` to
-start the various services such as NFS and DNS.
+Cachalot creates its own VM using `docker-machine`, it will not modify your existing `docker-machine` VMs.
 
 ## FAQ and solutions to common problems
 
 Before filing an issue, see the [FAQ](FAQ.md).
-
-## upgrading from vagrant
-
-If you previously used a version of Dinghy that ran on top of Vagrant, [read this](UPGRADE_FROM_VAGRANT.md).
 
 ## install
 
@@ -37,8 +31,8 @@ First the prerequisites:
 
 Then:
 
-    $ brew tap codekitchen/dinghy
-    $ brew install dinghy
+    $ brew tap amazeeio/cachalot
+    $ brew install cachalot
 
 You will need to install `docker` and `docker-machine` as well, either via Homebrew or the official Docker package downloads. To install with Homebrew:
 
@@ -46,11 +40,11 @@ You will need to install `docker` and `docker-machine` as well, either via Homeb
 
 You can specify provider (`virtualbox`, `vmware`, `xhyve` or `parallels`), memory and CPU options when creating the VM. See available options:
 
-    $ dinghy help create
+    $ amazeeio-cachalot help create
 
 Then create the VM and start services with:
 
-    $ dinghy create --provider virtualbox
+    $ amazeeio-cachalot create --provider virtualbox
 
 Once the VM is up, you'll get instructions to add some Docker-related
 environment variables, so that your Docker client can contact the Docker
@@ -59,51 +53,46 @@ equivalent.
 
 Sanity check!
 
-    $ docker run -it redis
+    $ docker run hello-world
 
 ## CLI Usage
 
 ```bash
-$ dinghy help
+$ amazeeio-cachalot help
 Commands:
-  dinghy create          # create the docker-machine VM
-  dinghy destroy         # stop and delete all traces of the VM
-  dinghy halt            # stop the VM and services
-  dinghy help [COMMAND]  # Describe available commands or one specific command
-  dinghy ip              # get the VM's IP address
-  dinghy restart         # restart the VM and services
-  dinghy shellinit       # returns env variables to set, should be run like $(dinghy shellinit)
-  dinghy ssh [args...]   # ssh to the VM
-  dinghy status          # get VM and services status
-  dinghy up              # start the Docker VM and services
-  dinghy upgrade         # upgrade the boot2docker VM to the newest available
-  dinghy version         # display dinghy version
+  amazeeio-cachalot create          # create the docker-machine VM
+  amazeeio-cachalot destroy         # stop and delete all traces of the VM
+  amazeeio-cachalot halt            # stop the VM and services
+  amazeeio-cachalot help [COMMAND]  # Describe available commands or one specific command
+  amazeeio-cachalot ip              # get the VM's IP address
+  amazeeio-cachalot restart         # restart the VM and services
+  amazeeio-cachalot shellinit       # returns env variables to set, should be run like $(amazeeio-cachalot shellinit)
+  amazeeio-cachalot ssh [args...]   # ssh to the VM
+  amazeeio-cachalot status          # get VM and services status
+  amazeeio-cachalot up              # start the Docker VM and services
+  amazeeio-cachalot upgrade         # upgrade the boot2docker VM to the newest available
+  amazeeio-cachalot version         # display amazeeio-cachalot version
 ```
 
 ## DNS
 
-Dinghy installs a DNS server listening on the private interface, which
-resolves \*.docker to the Dinghy VM. For instance, if you have a running
-container that exposes port 3000 to the host, and you like to call it
-`myrailsapp`, you can connect to it at `myrailsapp.docker` port 3000, e.g.
-`http://myrailsapp.docker:3000/` or `telnet myrailsapp.docker 3000`.
+Cachalot installs a DNS server listening on the private interface, which
+resolves \*.docker.amazee.io to the Cachalot VM.
 
 ## HTTP proxy
 
 Dinghy will run a HTTP proxy inside a docker container in the VM, giving you
-easy access to web apps running in other containers. This is based heavily on
-the excellent [nginx-proxy](https://github.com/jwilder/nginx-proxy) docker tool.
+easy access to web apps running in other containers. This is implemented with the
+[AmazeeIO HaProxy](https://github.com/AmazeeIO/docker-haproxy)
 
 The proxy will take a few moments to download the first time you launch the VM.
 
 Any containers that you want proxied, make sure the `VIRTUAL_HOST`
 environment variable is set, either with the `-e` option to docker or
 the environment hash in docker-compose. For instance setting
-`VIRTUAL_HOST=myrailsapp.docker` will make the container's exposed port
-available at `http://myrailsapp.docker/`. If the container exposes more
-than one port, set `VIRTUAL_PORT` to the http port number, as well.
+`VIRTUAL_HOST=mysite.docker.amazee.io` will make the container's exposed port
+available at `http://mysite.docker.amazee.io/` and `https://mysite.docker.amazee.io/`
 
-See the nginx-proxy documentation for further details.
 
 If you use docker-compose, you can add VIRTUAL_HOST to the environment hash in
 `docker-compose.yml`, for instance:
@@ -117,7 +106,7 @@ web:
 
 ## Preferences
 
-Dinghy creates a preferences file under ```HOME/.dinghy/preferences.yml```, which can be used to override default options. This is an example of the default generated preferenes:
+Dinghy creates a preferences file under ```HOME/.amazeeio-cachalot/preferences.yml```, which can be used to override default options. This is an example of the default generated preferenes:
 
 ```
 :preferences:
@@ -127,7 +116,7 @@ Dinghy creates a preferences file under ```HOME/.dinghy/preferences.yml```, whic
     provider: virtualbox
 ```
 
-If you want to override the dinghy machine name (e.g. to change it to 'default' so it can work with Kitematic), it can be changed here. First, destroy your current dinghy VM and then add the following to your preferences.yml file:
+If you want to override the amazeeio-cachalot machine name (e.g. to change it to 'default' so it can work with Kitematic), it can be changed here. First, destroy your current amazeeio-cachalot VM and then add the following to your preferences.yml file:
 
 ```
 :preferences:
@@ -153,30 +142,24 @@ doesn't even listen on other interfaces, for example).
 If you didn't originally install Dinghy as a tap, you'll need to switch to the
 tap to pull in the latest release:
 
-    $ brew tap codekitchen/dinghy
+    $ brew tap codekitchen/amazeeio-cachalot
 
 To update Dinghy itself, run:
 
-    $ dinghy halt
+    $ amazeeio-cachalot halt
     $ brew update
-    $ brew upgrade dinghy
-    $ dinghy up
+    $ brew upgrade amazeeio-cachalot
+    $ amazeeio-cachalot up
 
 To update the Docker VM, run:
 
-    $ dinghy upgrade
+    $ amazeeio-cachalot upgrade
 
-This will run `docker-machine upgrade` and then restart the dinghy services.
+This will run `docker-machine upgrade` and then restart the amazeeio-cachalot services.
 
-### prereleases
+## forked from
 
-You can install Dinghy's master branch with:
-
-    $ dinghy halt
-    $ brew reinstall --HEAD dinghy
-    $ dinghy up
-
-This branch may be less stable, so this isn't recommended in general.
+ - https://github.com/codekitchen/dinghy
 
 ## built on
 
