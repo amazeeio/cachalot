@@ -4,7 +4,7 @@ require 'amazeeio_cachalot/machine'
 
 class SshAgent
   CONTAINER_NAME = "amazeeio_ssh-agent"
-  IMAGE_NAME = "schnitzel/amazeeio_ssh-agent"
+  IMAGE_NAME = "amazeeio/ssh-agent"
 
   attr_reader :machine
 

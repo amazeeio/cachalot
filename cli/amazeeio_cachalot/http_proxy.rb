@@ -4,7 +4,7 @@ require 'amazeeio_cachalot/machine'
 
 class HttpProxy
   CONTAINER_NAME = "amazeeio_haproxy"
-  IMAGE_NAME = "schnitzel/amazeeio-haproxy"
+  IMAGE_NAME = "amazeeio/haproxy"
 
   attr_reader :machine
 
