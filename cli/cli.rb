@@ -193,7 +193,7 @@ class AmazeeIOCachalotCLI < Thor
   end
 
   def dns
-    @dns ||= Dnsmasq.new(machine, preferences[:amazeeio_cachalot_domain])
+    @dns ||= Dnsmasq.new(machine.vm_ip, preferences[:amazeeio_cachalot_domain])
   end
 
   def fsevents

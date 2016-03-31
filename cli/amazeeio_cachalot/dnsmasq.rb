@@ -6,10 +6,10 @@ class Dnsmasq
   include AmazeeIOCachalot::Daemon
   RESOLVER_DIR = Pathname("/etc/resolver")
 
-  attr_reader :machine, :resolver_file, :amazeeio_cachalot_domain
+  attr_reader :ip, :resolver_file, :amazeeio_cachalot_domain
 
-  def initialize(machine, amazeeio_cachalot_domain)
-    @machine = machine
+  def initialize(ip, amazeeio_cachalot_domain)
+    @ip = ip
     self.amazeeio_cachalot_domain = amazeeio_cachalot_domain || "docker.amazee.io"
   end
 
@@ -64,7 +64,7 @@ class Dnsmasq
       "--port=19323",
       "--bind-interfaces",
       "--no-resolv",
-      "--address=/.#{amazeeio_cachalot_domain}/#{machine.vm_ip}"
+      "--address=/.#{amazeeio_cachalot_domain}/#{ip}"
     ]
   end
 end
