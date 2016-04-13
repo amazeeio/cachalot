@@ -79,6 +79,15 @@ Commands:
 Cachalot installs a DNS server listening on the private interface, which
 resolves \*.docker.amazee.io to the Cachalot VM.
 
+### DNS issues
+
+In case the resolving has some issues, run:
+
+    $ sudo killall dnsmasq
+    $ sudo killall mDNSResponder
+
+and try to start the cachalot again.
+
 ## HTTP proxy
 
 Dinghy will run a HTTP proxy inside a docker container in the VM, giving you
