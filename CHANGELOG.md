@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 
 ## 0.9.7 - 2016-04-22
 
+## 0.9.7 - 2016-04-22
+
 - Better documentation
 - Some improvements on what is going on during creating a machine
 - Better output around shellinit
