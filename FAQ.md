@@ -44,6 +44,10 @@ The best to solve issues around not accessible docker sites is to try to turning
   `amazeeio-cachalot up`
 5. Start docker containers again
 
+## Cachalot starts with `DNS failed to run`
+
+Do the same as above, start at Nr 2
+
 ## The `docker` client gives an SSL error or times out
 
 The most common cause is the `DOCKER_*` environment variables not being set
