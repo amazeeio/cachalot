@@ -19,8 +19,12 @@ Solutions to many common problems can be found here.
 
 The best to solve issues around not accessible docker sites is to try to turning it off and on again:
 
-1. Make sure everything runs via `amazeeio-cachalot status`
-2. Halt cachalot with `amazeeio-cachalot halt` (check that there are no errors)
+1. Make sure everything runs via
+
+  `amazeeio-cachalot status`
+2. Halt cachalot with (check that there are no errors)
+
+  `amazeeio-cachalot halt`
 3. Kill maybe existing dnsmasq processes:
   1. display them with `ps -ax | grep dnsmasq`, you will see an output like:
 
@@ -29,8 +33,15 @@ The best to solve issues around not accessible docker sites is to try to turning
     2139 ??         0:00.06 /usr/local/sbin/dnsmasq --no-daemon --listen-address=127.0.0.1 --port=19323 --bind-interfaces --no-resolv --address=/.docker.amazee.io/192.168.99.100
     ```
 
-  2. take the first numer (here 2139) and kill it with: `kill 2139`
-4. Start cachalot again: `amazeeio-cachalot up`
+  2. take the first numer (here 2139) and kill it with:
+
+    `sudo kill 2139`
+  3. Tell OS X to update it's DNS cache:
+
+    `sudo killall mDNSResponder`
+4. Start cachalot again:
+
+  `amazeeio-cachalot up`
 5. Start docker containers again
 
 ## The `docker` client gives an SSL error or times out
