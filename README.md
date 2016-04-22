@@ -81,7 +81,7 @@ resolves \*.docker.amazee.io to the Cachalot VM.
 
 ## Preferences
 
-Dinghy creates a preferences file under ```HOME/.amazeeio-cachalot/preferences.yml```, which can be used to override default options. This is an example of the default generated preferenes:
+Cachalot creates a preferences file under ```HOME/.amazeeio-cachalot/preferences.yml```, which can be used to override default options. This is an example of the default generated preferenes:
 
 ```
 :preferences:
@@ -107,7 +107,7 @@ check the [FAQ](FAQ.md).
 ## a note on NFS sharing
 
 Cachalot shares your home directory (`/Users/<you>`) over NFS, using a
-private network interface between your host machine and the Dinghy
+private network interface between your host machine and the cachalot
 Docker Host. This sharing is done using a separate NFS daemon, not the
 system NFS daemon.
 
@@ -117,16 +117,16 @@ doesn't even listen on other interfaces, for example).
 
 ## upgrading
 
-If you didn't originally install Dinghy as a tap, you'll need to switch to the
+If you didn't originally install cachalot as a tap, you'll need to switch to the
 tap to pull in the latest release:
 
     $ brew tap amazeeio/cachalot
 
-To update Dinghy itself, run:
+To update cachalot itself, run:
 
     $ amazeeio-cachalot halt
     $ brew update
-    $ brew upgrade amazeeio-cachalot
+    $ brew upgrade cachalot
     $ amazeeio-cachalot up
 
 To update the Docker VM, run:
