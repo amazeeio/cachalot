@@ -11,8 +11,8 @@ class CheckEnv
     if set?
       puts "\e[32mYour environment variables are already set correctly.\e[0m"
     else
-      puts "\e[33mTo connect the Docker client to the Docker daemon, please set:\e[0m"
-      print
+      puts "\e[33mTo connect the Docker client to the Docker daemon, please run:\e[0m"
+      puts "eval $(amazeeio-cachalot shellinit)"
     end
   end
 
@@ -26,7 +26,9 @@ class CheckEnv
   end
 
   def print
-    expected.each { |name,value| puts "    export #{name}=#{value}" }
+    expected.each { |name,value| puts "export #{name}=#{value}" }
+    puts "# run this command, to setup your docker:"
+    puts "# eval $(amazeeio-cachalot shellinit)"
   end
 
   def set?
