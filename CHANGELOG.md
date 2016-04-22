@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+- renamed shellinit to env
+
 ## 0.9.8 - 2016-04-22
 
 ## 0.9.7 - 2016-04-22

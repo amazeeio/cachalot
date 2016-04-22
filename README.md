@@ -65,7 +65,7 @@ Commands:
   amazeeio-cachalot help [COMMAND]  # Describe available commands or one specific command
   amazeeio-cachalot ip              # get the VM's IP address
   amazeeio-cachalot restart         # restart the VM and services
-  amazeeio-cachalot shellinit       # returns env variables to set, should be run like $(amazeeio-cachalot shellinit)
+  amazeeio-cachalot env             # returns env variables to set, should be run like $(amazeeio-cachalot env)
   amazeeio-cachalot ssh [args...]   # ssh to the VM
   amazeeio-cachalot status          # get VM and services status
   amazeeio-cachalot up              # start the Docker VM and services
@@ -103,7 +103,7 @@ If you want to override the amazeeio-cachalot machine name (e.g. to change it to
 ## Problems?
 
 check the [FAQ](FAQ.md).
-s
+
 ## a note on NFS sharing
 
 Cachalot shares your home directory (`/Users/<you>`) over NFS, using a

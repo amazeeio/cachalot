@@ -152,13 +152,13 @@ class AmazeeIOCachalotCLI < Thor
     restart
   end
 
-  desc "shellinit", "returns env variables to set, should be run like $(amazeeio_cachalot shellinit)"
-  def shellinit
+  desc "env", "returns env variables to set, should be run like $(amazeeio_cachalot env)"
+  def env
     vm_must_exist!
     CheckEnv.new(machine).print
   end
 
-  map "env" => :shellinit
+  map "shellinit" => :env
 
   map "-v" => :version
   desc "version", "display amazeeio_cachalot version"
