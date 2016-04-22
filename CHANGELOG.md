@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+- Better documentation
+- Some improvements on what is going on during creating a machine
+- Better output around shellinit
+
 ## 0.9.6 - 2016-03-31
 
 ## 0.9.5 - 2016-03-28
