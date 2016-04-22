@@ -55,7 +55,7 @@ class AmazeeIOCachalotCLI < Thor
       exit(1)
     end
 
-    puts "Creating the #{machine.name} VM..."
+    puts "Creating the #{machine.name} VM, this takes a while and during this the machine will shortly be stopped, no worries..."
     machine.create(create_options)
     start_services
     preferences.update(create: create_options)
@@ -163,7 +163,7 @@ class AmazeeIOCachalotCLI < Thor
   map "-v" => :version
   desc "version", "display amazeeio_cachalot version"
   def version
-    puts "AmazeeIOCachalot #{DINGHY_VERSION}"
+    puts "AmazeeIOCachalot #{CACHALOT_VERSION}"
   end
 
   private
