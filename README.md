@@ -103,7 +103,7 @@ If you want to override the amazeeio-cachalot machine name (e.g. to change it to
 ## Problems?
 
 check the [FAQ](FAQ.md).
-
+s
 ## a note on NFS sharing
 
 Cachalot shares your home directory (`/Users/<you>`) over NFS, using a
