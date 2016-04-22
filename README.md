@@ -1,4 +1,4 @@
-# AmazeeIO Cachalot
+# amazee.io cachalot
 
 Local OS X Drupal Hosting based on Docker with batteries included, aimed at making a more pleasant local development experience.
 Based on the very awesome [dinghy](https://github.com/codekitchen/dinghy) by codekitchen.
@@ -7,8 +7,7 @@ Runs on top of [docker-machine](https://github.com/docker/machine).
 Why should you use cachalot instead of the regular docker-machine?
   * Faster volume sharing using NFS rather than built-in virtualbox/vmware file shares.
   * Filesystem events work on mounted volumes. Edit files on your host, and see gulp/grunt pick up the changes immediately.
-  * Easy access to running containers using built-in DNS, HTTP and HTTPS proxy.
-  * Easier SSH Key management with built-in SSH Agent
+  * Easy access to running containers using built-in DNS proxy.
 
 Cachalot creates its own VM using `docker-machine`, it will not modify your existing `docker-machine` VMs.
 
@@ -79,30 +78,6 @@ Commands:
 Cachalot installs a DNS server listening on the private interface, which
 resolves \*.docker.amazee.io to the Cachalot VM.
 
-## HTTP proxy
-
-Dinghy will run a HTTP proxy inside a docker container in the VM, giving you
-easy access to web apps running in other containers. This is implemented with the
-[AmazeeIO HaProxy](https://github.com/AmazeeIO/docker-haproxy)
-
-The proxy will take a few moments to download the first time you launch the VM.
-
-Any containers that you want proxied, make sure the `VIRTUAL_HOST`
-environment variable is set, either with the `-e` option to docker or
-the environment hash in docker-compose. For instance setting
-`VIRTUAL_HOST=mysite.docker.amazee.io` will make the container's exposed port
-available at `http://mysite.docker.amazee.io/` and `https://mysite.docker.amazee.io/`
-
-
-If you use docker-compose, you can add VIRTUAL_HOST to the environment hash in
-`docker-compose.yml`, for instance:
-
-```yaml
-web:
-  build: .
-  environment:
-    VIRTUAL_HOST: myrailsapp.docker
-```
 
 ## Preferences
 
@@ -110,7 +85,6 @@ Dinghy creates a preferences file under ```HOME/.amazeeio-cachalot/preferences.y
 
 ```
 :preferences:
-  :proxy_disabled: false
   :fsevents_disabled: false
   :create:
     provider: virtualbox
@@ -126,9 +100,13 @@ If you want to override the amazeeio-cachalot machine name (e.g. to change it to
   :machine_name: default
 ```
 
+## Problems?
+
+check the [FAQ](FAQ.md).
+
 ## a note on NFS sharing
 
-Dinghy shares your home directory (`/Users/<you>`) over NFS, using a
+Cachalot shares your home directory (`/Users/<you>`) over NFS, using a
 private network interface between your host machine and the Dinghy
 Docker Host. This sharing is done using a separate NFS daemon, not the
 system NFS daemon.
@@ -142,7 +120,7 @@ doesn't even listen on other interfaces, for example).
 If you didn't originally install Dinghy as a tap, you'll need to switch to the
 tap to pull in the latest release:
 
-    $ brew tap codekitchen/amazeeio-cachalot
+    $ brew tap amazeeio/cachalot
 
 To update Dinghy itself, run:
 
