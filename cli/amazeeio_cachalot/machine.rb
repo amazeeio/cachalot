@@ -6,8 +6,8 @@ class Machine
   attr_reader :machine_name
   alias :name :machine_name
 
-  def initialize(machine_name)
-    @machine_name = machine_name || 'amazeeio-cachalot'
+  def initialize(machine_name = 'amazeeio-cachalot')
+    @machine_name = machine_name
   end
 
   def create(options = {})

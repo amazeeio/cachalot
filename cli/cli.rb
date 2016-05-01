@@ -11,13 +11,17 @@ require 'amazeeio_cachalot.rb'
 require 'amazeeio_cachalot/check_env'
 require 'amazeeio_cachalot/docker'
 require 'amazeeio_cachalot/dnsmasq'
+require 'amazeeio_cachalot/resolver'
 require 'amazeeio_cachalot/fsevents_to_vm'
-require 'amazeeio_cachalot/preferences'
 require 'amazeeio_cachalot/unfs'
 require 'amazeeio_cachalot/machine'
 require 'amazeeio_cachalot/machine/create_options'
 require 'amazeeio_cachalot/system'
 require 'amazeeio_cachalot/version'
+require 'amazeeio_cachalot/docker_service'
+require 'amazeeio_cachalot/haproxy'
+require 'amazeeio_cachalot/ssh_agent'
+require 'amazeeio_cachalot/ssh_agent_add_key'
 
 $0 = 'amazeeio-cachalot' # fix our binary name, since we launch via the _amazeeio_cachalot_command wrapper
 
@@ -62,31 +66,61 @@ class AmazeeIOCachalotCLI < Thor
       exit(1)
     end
 
-    puts "Creating the #{machine.name} VM, this takes a while and during this the machine will shortly be stopped, no worries..."
+    puts "Creating the #{machine.name} VM, this takes a while and during this the machine will shortly be stopped, no worries...".yellow
     machine.create(create_options)
     start_services
-    preferences.update(create: create_options)
+    puts "\nYou now are running the amazee.io Docker Development Environment".light_cyan
+    puts "Don't know what to do now? Visit docker.amazee.io to learn more".light_cyan
   end
 
-  option :proxy,
-    type: :boolean,
-    desc: "start the HTTP proxy as well"
-  option :fsevents,
-    type: :boolean,
-    desc: "start the FS event forwarder"
   desc "up", "start the Docker VM and services"
   def up
+    puts "    _".white.on_black
+    puts "  /   \\".white.on_black
+    puts " ( I/O )   cachalot.amazee.io is starting...".white.on_black
+    puts "  \\ _ /\n".white.on_black
+
+    puts "Starting the virtual machine...".yellow
     vm_must_exist!
     if machine.running?
-      $stderr.puts "The VM '#{machine.name}' is already running."
-      exit(1)
+      puts "The VM '#{machine.name}' is already running.".green
     end
 
-    puts "Starting the #{machine.name} VM..."
     start_services
   end
 
   map "start" => :up
+
+  desc "docker_start", "starts the docker containers"
+  def docker_start
+    # this is hokey, but it can take a few seconds for docker daemon to be available
+    # TODO: poll in a loop until the docker daemon responds
+    puts "\nStarting Docker Containers...".yellow
+    sleep 5
+    if haproxy.start
+      puts "Successfully started Haproxy".green
+    else
+      puts "Error starting Haproxy".red
+    end
+
+    if sshagent.start
+      puts "Successfully started ssh-agent".green
+    else
+      puts "Error starting ssh-agent".red
+    end
+
+    if dnsmasq.start
+      puts "Successfully started dnsmasq".green
+    else
+      puts "Error starting dnsmasq".red
+    end
+
+    if sshagentaddkey.add_ssh_key
+      puts "Successfully injected ssh key".green
+    else
+      puts "Error injected ssh key".red
+    end
+  end
 
   desc "ssh [args...]", "ssh to the VM"
   def ssh(*args)
@@ -94,21 +128,97 @@ class AmazeeIOCachalotCLI < Thor
     machine.ssh_exec(*args)
   end
 
+  desc 'docker_update', 'Pulls Docker Images and recreates the Containers'
+  def docker_update
+    haproxy.pull
+    sshagent.pull
+    dnsmasq.pull
+    puts "Done. Recreating containers...".yellow
+    docker_halt
+    docker_start
+  end
+
+  desc 'docker_restart', 'Restarts all Docker Containers'
+  def docker_restart
+    docker_halt
+    docker_start
+  end
+
+  desc 'docker_status', 'Get Status of Docker containers'
+  def docker_status
+    puts "\n[docker containers]".yellow
+    if haproxy.running?
+      puts "Haproxy: Running as docker container #{haproxy.container_name}".light_green
+    else
+      puts "Haproxy is not running".red
+    end
+
+    if dnsmasq.running?
+      puts "Dnsmasq: Running as docker container #{dnsmasq.container_name}".light_green
+    else
+      puts "Dnsmasq is not running".red
+    end
+
+    if sshagent.running?
+      puts "ssh-agent: Running as docker container #{sshagent.container_name}, loaded keys:".light_green
+      sshagentaddkey.show_ssh_keys
+    else
+      puts "ssh-agent is not running".red
+    end
+    puts
+  end
+
   desc "status", "get VM and services status"
   def status
-    puts "  VM: #{machine.status}"
-    puts " NFS: #{unfs.status}"
-    puts "FSEV: #{fsevents.status}"
-    puts " DNS: #{dns.status}"
+    puts "[virtual machine]".yellow
+    if machine.running?
+      puts "#{machine.status}".light_green
+    else
+      puts "#{machine.status}".red
+    end
+    puts "\n[services]".yellow
+    if unfs.running?
+      puts "NFS: #{unfs.status}".light_green
+    else
+      puts "NFS: #{unfs.status}".red
+    end
+    if fsevents.running?
+      puts "FsEvents: #{fsevents.status}".light_green
+    else
+      puts "FsEvents: #{fsevents.status}".red
+    end
+
     return unless machine.status == 'running'
-    [unfs, dns, fsevents].each do |daemon|
+    [unfs, fsevents].each do |daemon|
       if !daemon.running?
         puts "\n\e[33m#{daemon.name} failed to run\e[0m"
         puts "details available in log file: #{daemon.logfile}"
       end
     end
-    puts
+
+    puts "\n[resolver]".yellow
+    if resolver.resolver_configured?
+      puts "Resolver: correctly configured".light_green
+    else
+      puts "Resolver: not configured".red
+    end
+
+    docker_status
+
     CheckEnv.new(machine).run
+
+    puts "\namazee.io wishes happy Drupaling!".light_cyan
+  end
+
+  desc "myip", "get the hosts IP address"
+  def myip
+    vm_must_exist!
+    if machine.running?
+      puts machine.host_ip
+    else
+      $stderr.puts "The VM is not running, `amazeeio_cachalot up` to start"
+      exit 1
+    end
   end
 
   desc "ip", "get the VM's IP address"
@@ -124,13 +234,26 @@ class AmazeeIOCachalotCLI < Thor
 
   desc "halt", "stop the VM and services"
   def halt
+    puts "    _".white.on_black
+    puts "  /   \\".white.on_black
+    puts " ( I/O )   cachalot.amazee.io is stopping...".white.on_black
+    puts "  \\ _ /\n".white.on_black
     vm_must_exist!
     fsevents.halt
+    unfs.halt
+    resolver.clean?
+    docker_halt
     puts "Stopping the #{machine.name} VM..."
     machine.halt
-    unfs.halt
-    dns.halt
   end
+
+  desc "docker_halt", "stop the Docker Containers"
+  def docker_halt
+    haproxy.halt
+    dnsmasq.halt
+    sshagent.halt
+  end
+
 
   map "down" => :halt
   map "stop" => :halt
@@ -165,6 +288,11 @@ class AmazeeIOCachalotCLI < Thor
     CheckEnv.new(machine).print
   end
 
+  desc 'addkey [~/.ssh/id_rsa]', 'Add additional ssh-key'
+  def addkey(key = "#{Dir.home}/.ssh/id_rsa")
+    sshagentaddkey.add_ssh_key(key)
+  end
+
   map "shellinit" => :env
 
   map "-v" => :version
@@ -183,24 +311,33 @@ class AmazeeIOCachalotCLI < Thor
     end
   end
 
-  def preferences
-    @preferences ||= Preferences.load
-  end
-
-  def fsevents_disabled?
-    preferences[:fsevents_disabled] == true
-  end
 
   def machine
-    @machine ||= Machine.new(preferences[:machine_name])
+    @machine ||= Machine.new()
   end
 
   def unfs
     @unfs ||= Unfs.new(machine)
   end
 
-  def dns
-    @dns ||= Dnsmasq.new(machine.vm_ip, preferences[:amazeeio_cachalot_domain])
+  def resolver
+    @resolver ||= Resolver.new(machine.vm_ip)
+  end
+
+  def haproxy
+    @haproxy ||= Haproxy.new(machine)
+  end
+
+  def sshagent
+    @sshagent ||= SshAgent.new(machine)
+  end
+
+  def sshagentaddkey
+    @sshagentaddkey ||= SshAgentAddKey.new(machine)
+  end
+
+  def dnsmasq
+    @dnsmasq ||= Dnsmasq.new(machine)
   end
 
   def fsevents
@@ -209,22 +346,25 @@ class AmazeeIOCachalotCLI < Thor
 
   def start_services
     machine.up
+    puts "\nStarting services...".yellow
     unfs.up
     if unfs.wait_for_unfs
       machine.mount(unfs)
     else
       puts "NFS mounting failed"
     end
-    use_fsevents = options[:fsevents] || (options[:fsevents].nil? && !fsevents_disabled?)
-    if use_fsevents
-      fsevents.up
-    end
-    dns.up
 
-    preferences.update(
-      fsevents_disabled: !fsevents,
-    )
+    fsevents.up
 
+    resolver.up
+    # this is hokey, but it can take a few seconds for docker daemon to be available
+    # TODO: poll in a loop until the docker daemon responds
+    docker_start
+
+    puts "\nAll started, here the current status:".light_blue
     status
   end
+
+
+
 end

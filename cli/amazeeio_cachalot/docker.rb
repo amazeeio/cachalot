@@ -10,7 +10,13 @@ class Docker
 
   def system(*command)
     set_env do
-      Kernel.system("docker", *command)
+      Sh.run_command(*command)
+    end
+  end
+
+  def system_interactive(*command)
+    set_env do
+      Kernel.system(*command)
     end
   end
 
