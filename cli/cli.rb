@@ -70,7 +70,7 @@ class AmazeeIOCachalotCLI < Thor
     machine.create(create_options)
     start_services
     puts "\nYou now are running the amazee.io Docker Development Environment".light_cyan
-    puts "Don't know what to do now? Visit docker.amazee.io to learn more".light_cyan
+    puts "Don't know what to do now? Visit docker.docs.amazee.io to learn more".light_cyan
   end
 
   desc "up", "start the Docker VM and services"

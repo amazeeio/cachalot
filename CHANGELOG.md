@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 0.10.2 - 2016-05-01
+
+- refactored so that shared Docker Containers are started directly by cachalot
+- Added some more new functionalities for the Docker Containers
+- Some better colloring and outputs during starting
+
 ## 0.10.1 - 2016-05-01
 
 ## 0.9.9 - 2016-04-22
