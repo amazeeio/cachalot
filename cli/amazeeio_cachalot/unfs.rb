@@ -55,6 +55,10 @@ class Unfs
     ENV['DINGHY_GUEST_MOUNT_DIR'] || AmazeeIOCachalot.home
   end
 
+  def logfile
+    daemon.logfile
+  end
+
   protected
 
   def daemon

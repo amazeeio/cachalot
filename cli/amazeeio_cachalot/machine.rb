@@ -27,6 +27,7 @@ class Machine
 
   def up
     unless running?
+      puts "Starting the #{name} VM...".yellow
       out, err = System.capture_output {
         system("start", machine_name)
       }

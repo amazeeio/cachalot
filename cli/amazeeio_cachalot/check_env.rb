@@ -8,12 +8,15 @@ class CheckEnv
   end
 
   def run
+    puts "\n[environment variables]".yellow
     if set?
-      puts "\e[32mYour environment variables are already set correctly.\e[0m"
+      puts "Your environment variables are already set correctly.".light_green
     else
-      puts "\e[33mTo connect the Docker client to the Docker daemon, please run:\e[0m"
+      puts "Environment variables not set.".light_red
+      puts "To set the correct environment variables run:".light_red
       puts "eval $(amazeeio-cachalot env)"
     end
+
   end
 
   def expected

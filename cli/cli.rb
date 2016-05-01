@@ -2,6 +2,8 @@ $LOAD_PATH << File.dirname(__FILE__)+"/thor/lib"
 require 'thor'
 $LOAD_PATH << File.dirname(__FILE__)+"/daemons/lib"
 require 'daemons'
+$LOAD_PATH << File.dirname(__FILE__)+"/colorize/lib"
+require 'colorize'
 
 $LOAD_PATH << File.dirname(__FILE__)
 
@@ -41,13 +43,18 @@ class AmazeeIOCachalotCLI < Thor
     desc: 'URL of the boot2docker image'
   desc "create", "create the docker-machine VM"
   def create
+    puts "    _".white.on_black
+    puts "  /   \\".white.on_black
+    puts " ( I/O )   cachalot.amazee.io".white.on_black
+    puts "  \\ _ /\n".white.on_black
+
     if machine.created?
-      $stderr.puts "The VM '#{machine.name}' already exists in docker-machine."
-      $stderr.puts "Run `amazeeio_cachalot up` to bring up the VM, or `amazeeio_cachalot destroy` to delete it."
+      $stderr.puts "The VM '#{machine.name}' already exists in docker-machine.".yellow
+      $stderr.puts "Run `amazeeio-cachalot up` to bring up the VM, or `amazeeio-cachalot destroy` to delete it.".yellow
       exit(1)
     end
 
-    create_options = (preferences[:create] || {}).merge(options)
+    create_options = ({}).merge(options)
     create_options['provider'] = machine.translate_provider(create_options['provider'])
 
     if create_options['provider'].nil?
