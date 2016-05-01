@@ -4,3 +4,6 @@
 [submodule "cli/daemons"]
 	path = cli/daemons
 	url = https://github.com/thuehlinger/daemons.git
+[submodule "cli/colorize"]
+	path = cli/colorize
+	url = https://github.com/fazibear/colorize.git
