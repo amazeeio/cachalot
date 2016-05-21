@@ -277,7 +277,10 @@ class AmazeeIOCachalotCLI < Thor
     desc: "destroy without confirmation"
   desc "destroy", "stop and delete all traces of the VM"
   def destroy
-    halt
+    vm_must_exist!
+    fsevents.halt
+    unfs.halt
+    resolver.clean?
     machine.destroy(force: options[:force])
   end
 

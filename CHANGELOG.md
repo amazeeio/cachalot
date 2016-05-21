@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+- destroy command does not try to stop the docker containers, as sometimes the docker itself is broken and that's why you like to destroy the vm
 - no black color background for messages anymore
 - restart=always for the dnsmasq container
 - cachalot stop does not remove the shared docker containers anymore it just stops them
