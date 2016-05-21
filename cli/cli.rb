@@ -242,12 +242,19 @@ class AmazeeIOCachalotCLI < Thor
     fsevents.halt
     unfs.halt
     resolver.clean?
-    docker_halt
+    docker_stop
     puts "Stopping the #{machine.name} VM..."
     machine.halt
   end
 
-  desc "docker_halt", "stop the Docker Containers"
+  desc "docker_stop", "stop the Docker Containers"
+  def docker_stop
+    haproxy.stop
+    dnsmasq.stop
+    sshagent.stop
+  end
+
+  desc "docker_halt", "stop and remove the Docker Containers"
   def docker_halt
     haproxy.halt
     dnsmasq.halt

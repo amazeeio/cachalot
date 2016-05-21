@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+- cachalot stop does not remove the shared docker containers anymore it just stops them
+
 ## 0.10.2 - 2016-05-01
 
 - refactored so that shared Docker Containers are started directly by cachalot

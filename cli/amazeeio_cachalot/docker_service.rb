@@ -52,7 +52,7 @@ class DockerService
   end
 
 
-  def stop
+  def run_stop
     docker.system("docker stop -t 1 #{Shellwords.escape(self.container_name)}") if self.running?
     !self.running?
   end
@@ -73,8 +73,16 @@ class DockerService
     @docker ||= Docker.new(@machine)
   end
 
+  def stop
+    if run_stop
+      puts "#{self.name} container stopped"
+    else
+      puts "#{self.name} container failed to stop"
+    end
+  end
+
   def halt
-    if stop
+    if run_stop
       puts "#{self.name} container stopped"
       if delete
         puts "#{self.name} container successfully deleted"
