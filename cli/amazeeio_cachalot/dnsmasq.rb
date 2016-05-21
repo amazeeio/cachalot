@@ -19,7 +19,7 @@ class Dnsmasq < DockerService
   end
 
   def run_cmd
-    "docker run -d -p 53:53/tcp -p 53:53/udp --name=#{Shellwords.escape(self.container_name)} " \
+    "docker run --restart=always -d -p 53:53/tcp -p 53:53/udp --name=#{Shellwords.escape(self.container_name)} " \
     "--cap-add=NET_ADMIN #{Shellwords.escape(self.image_name)} -A /#{Shellwords.escape(self.domain)}/#{Shellwords.escape(@machine.vm_ip)}"
   end
 end
