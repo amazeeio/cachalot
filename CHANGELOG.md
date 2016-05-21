@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 0.11.0 - 2016-05-21
+
 - you can also call amazeeio-cachalot via the cachalot command
 - destroy command does not try to stop the docker containers, as sometimes the docker itself is broken and that's why you like to destroy the vm
 - no black color background for messages anymore
