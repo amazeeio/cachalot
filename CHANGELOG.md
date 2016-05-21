@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 0.11.1 - 2016-05-21
+
 ## 0.11.0 - 2016-05-21
 
 - you can also call amazeeio-cachalot via the cachalot command
