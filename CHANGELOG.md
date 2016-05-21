@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+- no black color background for messages anymore
 - restart=always for the dnsmasq container
 - cachalot stop does not remove the shared docker containers anymore it just stops them
 

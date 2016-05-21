@@ -47,10 +47,10 @@ class AmazeeIOCachalotCLI < Thor
     desc: 'URL of the boot2docker image'
   desc "create", "create the docker-machine VM"
   def create
-    puts "    _".white.on_black
-    puts "  /   \\".white.on_black
-    puts " ( I/O )   cachalot.amazee.io".white.on_black
-    puts "  \\ _ /\n".white.on_black
+    puts "    _".white
+    puts "  /   \\".white
+    puts " ( I/O )   cachalot.amazee.io".white
+    puts "  \\ _ /\n".white
 
     if machine.created?
       $stderr.puts "The VM '#{machine.name}' already exists in docker-machine.".yellow
@@ -75,10 +75,10 @@ class AmazeeIOCachalotCLI < Thor
 
   desc "up", "start the Docker VM and services"
   def up
-    puts "    _".white.on_black
-    puts "  /   \\".white.on_black
-    puts " ( I/O )   cachalot.amazee.io is starting...".white.on_black
-    puts "  \\ _ /\n".white.on_black
+    puts "    _".white
+    puts "  /   \\".white
+    puts " ( I/O )   cachalot.amazee.io is starting...".white
+    puts "  \\ _ /\n".white
 
     puts "Starting the virtual machine...".yellow
     vm_must_exist!
@@ -234,10 +234,10 @@ class AmazeeIOCachalotCLI < Thor
 
   desc "halt", "stop the VM and services"
   def halt
-    puts "    _".white.on_black
-    puts "  /   \\".white.on_black
-    puts " ( I/O )   cachalot.amazee.io is stopping...".white.on_black
-    puts "  \\ _ /\n".white.on_black
+    puts "    _".white
+    puts "  /   \\".white
+    puts " ( I/O )   cachalot.amazee.io is stopping...".white
+    puts "  \\ _ /\n".white
     vm_must_exist!
     fsevents.halt
     unfs.halt
