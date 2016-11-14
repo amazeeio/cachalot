@@ -3,7 +3,7 @@ require_relative 'docker_service'
 class Dnsmasq < DockerService
 
   def image_name
-    'andyshinn/dnsmasq:2.75'
+    'andyshinn/dnsmasq:2.76'
   end
 
   def name
