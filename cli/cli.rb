@@ -45,6 +45,10 @@ class AmazeeIOCachalotCLI < Thor
     type: :string,
     aliases: :u,
     desc: 'URL of the boot2docker image'
+  option :hostonly_cidr,
+    type: :string,
+    aliases: :h,
+    desc: 'Specify the Host Only CIDR eg. "192.168.99.1/24"'
   desc "create", "create the docker-machine VM"
   def create
     puts "    _".white
