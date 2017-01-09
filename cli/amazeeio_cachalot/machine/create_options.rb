@@ -40,7 +40,7 @@ module Machine::CreateOptions
       flags[:memory], (options['memory'] || MEM_DEFAULT).to_s,
       flags[:cpus], (options['cpus'] || CPU_DEFAULT).to_s,
       flags[:disk], (options['disk'] || DISK_DEFAULT).to_s,
-      flags[:hostonly_cidr], (options['hostonly_cidr']).to_s,
+      flags[:hostonly_cidr], (options['hostonly_cidr'] || HOST_DEFAULT).to_s,
       flags[:no_share]
     ].compact.tap do |create_options|
       unless options['boot2docker_url'].nil?
