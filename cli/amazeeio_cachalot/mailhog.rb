@@ -19,8 +19,7 @@ class Mailhog < DockerService
   end
 
   def run_cmd
-    "docker run --restart=always -d -p 25:25 --expose 80 --name=#{Shellwords.escape(self.container_name)} " \
-    '-e "MH_SMTP_BIND_ADDR=0.0.0.0:25" ' \
+    "docker run --restart=always -d -p 8025:8025 --expose 80 --name=#{Shellwords.escape(self.container_name)} " \
     '-e "MH_UI_BIND_ADDR=0.0.0.0:80" ' \
     '-e "MH_API_BIND_ADDR=0.0.0.0:80" ' \
     '-e "AMAZEEIO=AMAZEEIO" ' \
