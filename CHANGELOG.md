@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 0.12.0 - 2017-01-31
+
 - Added MailHog, check https://docs.amazee.io/changelog.html how to use it :)
 
 ## 0.11.2 - 2016-11-14
