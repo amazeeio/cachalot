@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+- Added MailHog, check https://docs.amazee.io/changelog.html how to use it :)
+
 ## 0.11.2 - 2016-11-14
 
 - merged https://github.com/amazeeio/cachalot/pull/2 "Update dnsmasq version to 2.76"
