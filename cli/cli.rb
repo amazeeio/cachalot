@@ -20,6 +20,7 @@ require 'amazeeio_cachalot/system'
 require 'amazeeio_cachalot/version'
 require 'amazeeio_cachalot/docker_service'
 require 'amazeeio_cachalot/haproxy'
+require 'amazeeio_cachalot/mailhog'
 require 'amazeeio_cachalot/ssh_agent'
 require 'amazeeio_cachalot/ssh_agent_add_key'
 
@@ -45,6 +46,10 @@ class AmazeeIOCachalotCLI < Thor
     type: :string,
     aliases: :u,
     desc: 'URL of the boot2docker image'
+  option :hostonly_cidr,
+    type: :string,
+    aliases: :h,
+    desc: 'Specify the Host Only CIDR eg. "192.168.99.1/24"'
   desc "create", "create the docker-machine VM"
   def create
     puts "    _".white
@@ -115,6 +120,12 @@ class AmazeeIOCachalotCLI < Thor
       puts "Error starting dnsmasq".red
     end
 
+    if mailhog.start
+      puts "Successfully started Mailhog".green
+    else
+      puts "Error starting Mailhog".red
+    end
+
     if sshagentaddkey.add_ssh_key
       puts "Successfully injected ssh key".green
     else
@@ -133,6 +144,7 @@ class AmazeeIOCachalotCLI < Thor
     haproxy.pull
     sshagent.pull
     dnsmasq.pull
+    mailhog.pull
     puts "Done. Recreating containers...".yellow
     docker_halt
     docker_start
@@ -157,6 +169,12 @@ class AmazeeIOCachalotCLI < Thor
       puts "Dnsmasq: Running as docker container #{dnsmasq.container_name}".light_green
     else
       puts "Dnsmasq is not running".red
+    end
+
+    if mailhog.running?
+      puts "Mailhog: Running as docker container #{mailhog.container_name}".light_green
+    else
+      puts "Mailhog is not running".red
     end
 
     if sshagent.running?
@@ -251,6 +269,7 @@ class AmazeeIOCachalotCLI < Thor
   def docker_stop
     haproxy.stop
     dnsmasq.stop
+    mailhog.stop
     sshagent.stop
   end
 
@@ -258,6 +277,7 @@ class AmazeeIOCachalotCLI < Thor
   def docker_halt
     haproxy.halt
     dnsmasq.halt
+    mailhog.halt
     sshagent.halt
   end
 
@@ -348,6 +368,10 @@ class AmazeeIOCachalotCLI < Thor
 
   def dnsmasq
     @dnsmasq ||= Dnsmasq.new(machine)
+  end
+
+  def mailhog
+    @mailhog ||= Mailhog.new(machine)
   end
 
   def fsevents
