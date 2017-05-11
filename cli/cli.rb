@@ -12,6 +12,7 @@ require 'amazeeio_cachalot/check_env'
 require 'amazeeio_cachalot/docker'
 require 'amazeeio_cachalot/dnsmasq'
 require 'amazeeio_cachalot/resolver'
+require 'amazeeio_cachalot/sudoers'
 require 'amazeeio_cachalot/fsevents_to_vm'
 require 'amazeeio_cachalot/unfs'
 require 'amazeeio_cachalot/machine'
@@ -219,6 +220,13 @@ class AmazeeIOCachalotCLI < Thor
       puts "Resolver: correctly configured".light_green
     else
       puts "Resolver: not configured".red
+    end
+
+    puts "\n[sudoers]".yellow
+    if sudoers.sudoers_configured?
+      puts "sudoers: correctly configured".light_green
+    else
+      puts "sudoers: not configured".red
     end
 
     docker_status
