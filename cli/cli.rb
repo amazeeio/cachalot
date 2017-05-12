@@ -339,6 +339,11 @@ class AmazeeIOCachalotCLI < Thor
     puts "AmazeeIOCachalot #{CACHALOT_VERSION}"
   end
 
+  desc 'sudoers_create', 'Set up the sudoers file so you are not prompted for credentials all the time'
+  def sudoers_create!
+    sudoers.install()
+  end
+
   private
 
   def vm_must_exist!
@@ -360,6 +365,10 @@ class AmazeeIOCachalotCLI < Thor
 
   def resolver
     @resolver ||= Resolver.new(machine.vm_ip)
+  end
+
+  def sudoers
+    @sudoers ||= Sudoers.new()
   end
 
   def haproxy
