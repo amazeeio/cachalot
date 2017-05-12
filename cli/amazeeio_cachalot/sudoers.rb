@@ -1,16 +1,11 @@
 require 'tempfile'
 
 class Sudoers
-  SUDOERS_DIR = Pathname("/etc/sudoers.d")
+  SUDOERS_DIR = Pathname.new("/etc/sudoers.d")
 
-  def directory_exists?(SUDOERS_DIR)
-    File.directory?(directory)
-  end
 
-  attr_reader :amazeeio_sudoers_file
-
-  def initialize(amazeeio_sudoers_file = '/etc/sudoers.d/amazeeio')
-    self.amazeeio_sudoers_file = amazeeio_sudoers_file
+  def initialize()
+    @sudoers_file = SUDOERS_DIR.join('amazeeio')
   end
 
 
