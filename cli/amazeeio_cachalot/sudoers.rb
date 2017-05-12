@@ -34,12 +34,12 @@ class Sudoers
       f.write(sudoers_contents)
       f.close
       system!("creating #{@sudoers_file}", "sudo", "cp", f.path, @sudoers_file)
-      system!("creating #{@sudoers_file}", "sudo", "chmod", "440", @sudoers_file)
+      system!("creating #{@sudoers_file}", "sudo", "chmod", "444", @sudoers_file)
     end
   end
 
   def sudoers_configured?
-    @sudoers_file.exist? && File.read(@sudoers_file) == resolver_contents
+    @sudoers_file.exist? && File.read(@sudoers_file) == sudoers_contents
   end
 
   def system!(step, *args)
