@@ -398,6 +398,7 @@ class AmazeeIOCachalotCLI < Thor
   def start_services
     machine.up
     puts "\nStarting services...".yellow
+    sudoers.install
     unfs.up
     if unfs.wait_for_unfs
       machine.mount(unfs)
@@ -415,7 +416,4 @@ class AmazeeIOCachalotCLI < Thor
     puts "\nAll started, here the current status:".light_blue
     status
   end
-
-
-
 end
