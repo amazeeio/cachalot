@@ -339,8 +339,8 @@ class AmazeeIOCachalotCLI < Thor
     puts "AmazeeIOCachalot #{CACHALOT_VERSION}"
   end
 
-  desc 'sudoers_create', 'Set up the sudoers file so you are not prompted for credentials all the time'
-  def sudoers_create!
+  desc 'sudoers_configure', 'Set up the sudoers file so you are not prompted for credentials all the time'
+  def sudoers_configure!
     sudoers.install()
   end
 
