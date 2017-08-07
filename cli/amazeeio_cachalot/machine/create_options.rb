@@ -40,9 +40,12 @@ module Machine::CreateOptions
       flags[:memory], (options['memory'] || MEM_DEFAULT).to_s,
       flags[:cpus], (options['cpus'] || CPU_DEFAULT).to_s,
       flags[:disk], (options['disk'] || DISK_DEFAULT).to_s,
-      flags[:hostonly_cidr], (options['hostonly_cidr'] || HOST_DEFAULT).to_s,
       flags[:no_share]
     ].compact.tap do |create_options|
+      if provider == 'virtualbox'
+        create_options << flags[:hostonly_cidr]
+        create_options << (options['hostonly_cidr'] || HOST_DEFAULT).to_s
+      end
       unless options['boot2docker_url'].nil?
         create_options << flags[:boot2docker_url]
         create_options << options['boot2docker_url'].to_s
