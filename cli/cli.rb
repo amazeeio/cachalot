@@ -12,6 +12,7 @@ require 'amazeeio_cachalot/check_env'
 require 'amazeeio_cachalot/docker'
 require 'amazeeio_cachalot/dnsmasq'
 require 'amazeeio_cachalot/resolver'
+require 'amazeeio_cachalot/sudoers'
 require 'amazeeio_cachalot/fsevents_to_vm'
 require 'amazeeio_cachalot/unfs'
 require 'amazeeio_cachalot/machine'
@@ -221,6 +222,13 @@ class AmazeeIOCachalotCLI < Thor
       puts "Resolver: not configured".red
     end
 
+    puts "\n[sudoers]".yellow
+    if sudoers.sudoers_configured?
+      puts "sudoers: correctly configured".light_green
+    else
+      puts "sudoers: not configured".red
+    end
+
     docker_status
 
     CheckEnv.new(machine).run
@@ -331,6 +339,11 @@ class AmazeeIOCachalotCLI < Thor
     puts "AmazeeIOCachalot #{CACHALOT_VERSION}"
   end
 
+  desc 'sudoers_configure', 'Set up the sudoers file so you are not prompted for credentials all the time'
+  def sudoers_configure!
+    sudoers.install()
+  end
+
   private
 
   def vm_must_exist!
@@ -352,6 +365,10 @@ class AmazeeIOCachalotCLI < Thor
 
   def resolver
     @resolver ||= Resolver.new(machine.vm_ip)
+  end
+
+  def sudoers
+    @sudoers ||= Sudoers.new()
   end
 
   def haproxy
@@ -381,6 +398,7 @@ class AmazeeIOCachalotCLI < Thor
   def start_services
     machine.up
     puts "\nStarting services...".yellow
+    sudoers.install
     unfs.up
     if unfs.wait_for_unfs
       machine.mount(unfs)
@@ -398,7 +416,4 @@ class AmazeeIOCachalotCLI < Thor
     puts "\nAll started, here the current status:".light_blue
     status
   end
-
-
-
 end
