@@ -20,6 +20,7 @@ require 'amazeeio_cachalot/machine/create_options'
 require 'amazeeio_cachalot/system'
 require 'amazeeio_cachalot/version'
 require 'amazeeio_cachalot/docker_service'
+require 'amazeeio_cachalot/docker_network'
 require 'amazeeio_cachalot/haproxy'
 require 'amazeeio_cachalot/mailhog'
 require 'amazeeio_cachalot/ssh_agent'
@@ -97,16 +98,28 @@ class AmazeeIOCachalotCLI < Thor
 
   map "start" => :up
 
-  desc "docker_start", "starts the docker containers"
+  desc "docker_start", "starts the docker containers and network"
   def docker_start
     # this is hokey, but it can take a few seconds for docker daemon to be available
     # TODO: poll in a loop until the docker daemon responds
-    puts "\nStarting Docker Containers...".yellow
+    puts "\nStarting Docker Containers and network...".yellow
     sleep 5
     if haproxy.start
       puts "Successfully started Haproxy".green
     else
       puts "Error starting Haproxy".red
+    end
+
+    if dockernetwork.create
+      puts "Successfully created amazeeio network".green
+    else
+      puts "Error creating amazeeio network".red
+    end
+
+    if dockernetwork.connect
+      puts "Successfully connected haproxy to amazeeio network".green
+    else
+      puts "Error connecting haproxy to amazeeio network".red
     end
 
     if sshagent.start
@@ -159,11 +172,23 @@ class AmazeeIOCachalotCLI < Thor
 
   desc 'docker_status', 'Get Status of Docker containers'
   def docker_status
-    puts "\n[docker containers]".yellow
+    puts "\n[docker containers & network]".yellow
     if haproxy.running?
       puts "Haproxy: Running as docker container #{haproxy.container_name}".light_green
     else
       puts "Haproxy is not running".red
+    end
+
+    if dockernetwork.exists?
+      puts "Network: Exists as name #{dockernetwork.network_name}".light_green
+    else
+      puts "Network does not exist".red
+    end
+
+    if dockernetwork.haproxy_connected?
+      puts "Network: Haproxy #{dockernetwork.haproxy_name} connected to #{dockernetwork.network_name}".light_green
+    else
+      puts "Haproxy is not connected to #{dockernetwork.network_name}".red
     end
 
     if dnsmasq.running?
@@ -373,6 +398,10 @@ class AmazeeIOCachalotCLI < Thor
 
   def haproxy
     @haproxy ||= Haproxy.new(machine)
+  end
+
+  def dockernetwork
+    @dockernetwork ||= DockerNetwork.new(machine)
   end
 
   def sshagent
