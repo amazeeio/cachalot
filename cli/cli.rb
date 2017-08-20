@@ -104,16 +104,17 @@ class AmazeeIOCachalotCLI < Thor
     # TODO: poll in a loop until the docker daemon responds
     puts "\nStarting Docker Containers and network...".yellow
     sleep 5
-    if haproxy.start
-      puts "Successfully started Haproxy".green
-    else
-      puts "Error starting Haproxy".red
-    end
 
     if dockernetwork.create
       puts "Successfully created amazeeio network".green
     else
       puts "Error creating amazeeio network".red
+    end
+
+    if haproxy.start
+      puts "Successfully started Haproxy".green
+    else
+      puts "Error starting Haproxy".red
     end
 
     if dockernetwork.connect
