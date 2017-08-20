@@ -12,7 +12,11 @@ class DockerNetwork < DockerService
   end
 
   def create_cmd
-    "docker network create #{self.network_name}"
+    "docker network create --subnet=10.99.99.0/24 --gateway=10.99.99.1 #{self.network_name}"
+  end
+
+  def delete_cmd
+    "docker network rm #{self.network_name}"
   end
 
   def connect_haproxy_cmd
@@ -28,6 +32,17 @@ class DockerNetwork < DockerService
       end
     end
     self.exists?
+  end
+
+  def delete
+    if self.exists?
+      if docker.system(self.delete_cmd)
+        puts "#{self.network_name} network successfully deleted"
+      else
+        puts "#{self.network_name} network failed to delete"
+      end
+    end
+    !self.exists?
   end
 
   def connect

@@ -315,6 +315,10 @@ class AmazeeIOCachalotCLI < Thor
     sshagent.halt
   end
 
+  desc "dockernetwork_remove", "remove the docker network"
+  def dockernetwork_remove
+    dockernetwork.delete
+  end
 
   map "down" => :halt
   map "stop" => :halt
