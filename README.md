@@ -1,3 +1,7 @@
+# Discontinued: Use [amazeeio/pygmy](https://github.com/amazeeio/pygmy)
+As of starting to use lagoon we start shifting our efforts towards pygmy. There will be no further work/improvements on amazeeio/cachalot.
+
+
 # amazee.io cachalot
 
 Local OS X Drupal Hosting based on Docker with batteries included, aimed at making a more pleasant local development experience.
